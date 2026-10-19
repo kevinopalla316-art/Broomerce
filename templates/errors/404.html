@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Page Not Found | BROOMERCE{% endblock %}
+
+{% block content %}
+<section class="error-page container">
+  <div class="error-card">
+    <p class="eyebrow">404 Error</p>
+    <h1>Oops! We couldn’t find that page.</h1>
+    <p>The page you’re looking for may have moved or no longer exists.</p>
+    <a href="{{ url_for('main.home') }}" class="primary-btn">Back to Home</a>
+  </div>
+</section>
+{% endblock %}

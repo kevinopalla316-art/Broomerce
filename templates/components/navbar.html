@@ -1,0 +1,177 @@
+<header class="site-header">
+  <nav class="navbar container">
+    <div class="nav-left">
+      <a href="{{ url_for('main.home') }}" class="brand">
+        <span class="brand-mark">🧹</span>
+        <span>BROOMERCE</span>
+      </a>
+
+      <div class="mobile-icon-actions">
+        {% if session.get('user_id') %}
+          <a href="{{ url_for('orders.orders') }}" class="icon-link mobile-icon profile-icon" aria-label="My orders">
+            <svg class="profile-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 12a4 4 0 1 0 0-8a4 4 0 0 0 0 8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M4 20a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="icon-link mobile-icon profile-icon" aria-label="Login">
+            <svg class="profile-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 12a4 4 0 1 0 0-8a4 4 0 0 0 0 8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M4 20a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </a>
+        {% endif %}
+
+        <a href="{{ url_for('cart.cart') }}" class="icon-link cart-link mobile-icon cart-icon" aria-label="Cart">
+          <svg class="cart-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 4h2l2 10h12l2-7H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="9" cy="19" r="2" fill="none" stroke="currentColor" stroke-width="2" />
+            <circle cx="17" cy="19" r="2" fill="none" stroke="currentColor" stroke-width="2" />
+          </svg>
+          {% set cart_summary = session.get('cart', {}) %}
+          {% set cart_count = cart_summary.values() | sum if cart_summary else 0 %}
+          {% if cart_count %}
+            <span class="cart-count">{{ cart_count }}</span>
+          {% endif %}
+        </a>
+      </div>
+
+      <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <div class="nav-center">
+      <a href="{{ url_for('main.home') }}" class="nav-link{% if request.endpoint == 'main.home' %} active{% endif %}">Home</a>
+      <a href="{{ url_for('products.products', _anchor='shop') }}" class="nav-link shop-link{% if request.endpoint == 'products.products' or request.endpoint == 'products.category_products' %} active{% endif %}">Shop</a>
+      <a href="{{ url_for('products.products', _anchor='products-list') }}" class="nav-link products-link">Products</a>
+    </div>
+
+    {% if request.endpoint not in ['auth.login', 'auth.signup'] %}
+    <div class="nav-search">
+      <input type="text" placeholder="Search brooms..." aria-label="Search" />
+      <button aria-label="Search button">Search</button>
+    </div>
+    {% endif %}
+
+    <div class="nav-right">
+      {% if session.get('user_id') %}
+        <a href="{{ url_for('orders.orders') }}" class="icon-link profile-icon" aria-label="My orders">
+          <svg class="profile-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 12a4 4 0 1 0 0-8a4 4 0 0 0 0 8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M4 20a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="icon-link profile-icon" aria-label="Login">
+          <svg class="profile-svg" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 12a4 4 0 1 0 0-8a4 4 0 0 0 0 8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M4 20a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </a>
+      {% endif %}
+      <a href="{{ url_for('cart.cart') }}" class="icon-link cart-link" aria-label="Cart">
+        <svg class="cart-svg" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 4h2l2 10h12l2-7H7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="9" cy="19" r="2" fill="none" stroke="currentColor" stroke-width="2" />
+          <circle cx="17" cy="19" r="2" fill="none" stroke="currentColor" stroke-width="2" />
+        </svg>
+        {% set cart_summary = session.get('cart', {}) %}
+        {% set cart_count = cart_summary.values() | sum if cart_summary else 0 %}
+        {% if cart_count %}
+          <span class="cart-count">{{ cart_count }}</span>
+        {% endif %}
+      </a>
+
+      {% if session.get('user_id') %}
+        <div class="user-menu" aria-label="User menu">
+          <button type="button" class="user-pill" aria-expanded="false" aria-controls="user-menu-dropdown" aria-haspopup="true">
+            Hi, {{ session.get('user_name', 'Customer') }}
+          </button>
+          <div id="user-menu-dropdown" class="dropdown-menu" role="menu">
+            {% if session.get('user_role') in ['admin', 'staff'] %}
+              <a href="{{ url_for('admin.dashboard') }}" role="menuitem">Admin</a>
+            {% endif %}
+            <a href="{{ url_for('orders.orders') }}" role="menuitem">My Account</a>
+            <a href="{{ url_for('orders.orders') }}" role="menuitem">My Orders</a>
+            <a href="{{ url_for('auth.logout') }}" role="menuitem">Logout</a>
+          </div>
+        </div>
+      {% else %}
+        <div class="auth-links">
+          <a href="{{ url_for('auth.login') }}" class="nav-link">Login</a>
+          <a href="{{ url_for('auth.signup') }}" class="nav-link nav-button">Sign Up</a>
+        </div>
+      {% endif %}
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <div class="mobile-menu-panel">
+      <div class="mobile-menu-header">
+        <button class="mobile-menu-close" aria-label="Close menu">×</button>
+        <a href="{{ url_for('main.home') }}" class="mobile-brand">
+          <span class="brand-mark">🧹</span>
+          <span>BROOMERCE</span>
+        </a>
+      </div>
+      <div class="mobile-menu-links">
+        <a href="{{ url_for('main.home') }}" class="mobile-menu-link{% if request.endpoint == 'main.home' %} active{% endif %}">
+          <span class="mobile-menu-icon">
+            <svg class="drawer-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 11 L12 3 L21 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M5 11v10h14V11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>Home
+        </a>
+        <a href="{{ url_for('products.products', _anchor='shop') }}" class="mobile-menu-link shop-link{% if request.endpoint == 'products.products' or request.endpoint == 'products.category_products' %} active{% endif %}">
+          <span class="mobile-menu-icon">
+            <svg class="drawer-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16v6H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M4 15h16v4H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>Shop
+        </a>
+        <a href="{{ url_for('products.products', _anchor='products-list') }}" class="mobile-menu-link products-link">
+          <span class="mobile-menu-icon">
+            <svg class="drawer-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h7v7H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M13 7h7v7h-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M4 16h7v4H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M13 16h7v4h-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>Products
+        </a>
+        <a href="{{ url_for('auth.login') }}" class="mobile-menu-link{% if request.endpoint == 'auth.login' %} active{% endif %}">
+          <span class="mobile-menu-icon">
+            <svg class="drawer-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M10 17l5-5-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M15 12H3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </span>Login
+        </a>
+        <a href="{{ url_for('auth.signup') }}" class="mobile-menu-link{% if request.endpoint == 'auth.signup' %} active{% endif %}">
+          <span class="mobile-menu-icon">
+            <svg class="drawer-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </span>Sign Up
+        </a>
+        {% if session.get('user_id') %}
+          <a href="{{ url_for('auth.logout') }}" class="mobile-menu-link{% if request.endpoint == 'auth.logout' %} active{% endif %}">
+            <span class="mobile-menu-icon">
+              <svg class="drawer-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M16 17l5-5-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M21 12H9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </span>Logout
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</header>

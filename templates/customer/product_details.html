@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} | BROOMERCE{% endblock %}
+
+{% block content %}
+<section class="product-detail-page container">
+  <div class="product-detail-layout">
+    <div class="product-gallery">
+      <div class="main-image product-{{ product.id % 4 + 1 }}">
+        {% if product.image %}
+          <img src="{{ url_for('static', filename='images/products/' + product.image) }}" alt="{{ product.name }}" />
+        {% else %}
+          <div class="placeholder-box">BROOMERCE</div>
+        {% endif %}
+      </div>
+      <div class="thumb-row">
+        <div class="thumb active"></div>
+        <div class="thumb"></div>
+        <div class="thumb"></div>
+      </div>
+    </div>
+
+    <div class="product-detail-info">
+      <p class="eyebrow">{{ product.category_name }}</p>
+      <h1>{{ product.name }}</h1>
+      <div class="rating-row">
+        <span class="stars">★★★★★</span>
+        <span class="review-note">4.8 / 5 (Preview)</span>
+      </div>
+      <div class="product-price">₱{{ '%.2f'|format(product.price) }}</div>
+      <p class="product-description">{{ product.description }}</p>
+
+      {% if product.stock_quantity <= 0 %}
+        <p class="stock-status out">Out of Stock</p>
+      {% elif product.stock_quantity <= 5 %}
+        <p class="stock-status low">Only {{ product.stock_quantity }} left</p>
+      {% else %}
+        <p class="stock-status in">In Stock</p>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('cart.add_to_cart', product_id=product.id) }}">
+        <div class="quantity-selector">
+          <label for="quantity">Quantity</label>
+          <div class="quantity-box">
+            <button type="button" class="qty-button" data-target="quantity" data-action="decrease">-</button>
+            <input id="quantity" name="quantity" type="number" value="1" min="1" max="{{ product.stock_quantity if product.stock_quantity > 0 else 1 }}" />
+            <button type="button" class="qty-button" data-target="quantity" data-action="increase">+</button>
+          </div>
+        </div>
+
+        <div class="detail-actions">
+          <button type="submit" class="primary-btn add-to-cart-btn">Add to Cart</button>
+          <button type="submit" class="secondary-btn buy-now-btn" formaction="{{ url_for('cart.buy_now', product_id=product.id) }}">Buy Now</button>
+        </div>
+      </form>
+
+      <ul class="benefits-list">
+        <li>Durable & Long-lasting</li>
+        <li>Natural Materials</li>
+        <li>Suitable for indoor and outdoor cleaning</li>
+      </ul>
+    </div>
+  </div>
+
+  {% if related_products %}
+    <section class="related-section">
+      <div class="section-heading">
+        <h2>You may also like</h2>
+      </div>
+      <div class="product-grid related-grid">
+        {% for related in related_products %}
+          <article class="product-card">
+            <div class="product-image product-{{ loop.index % 4 + 1 }}">
+              {% if related.image %}
+                <img src="{{ url_for('static', filename='images/products/' + related.image) }}" alt="{{ related.name }}" />
+              {% endif %}
+            </div>
+            <div class="product-info">
+              <h3>{{ related.name }}</h3>
+              <p>₱{{ '%.2f'|format(related.price) }}</p>
+              <a href="{{ url_for('products.product_details', slug=related.slug) }}" class="secondary-btn small-btn">View</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders | BROOMERCE{% endblock %}
+
+{% block content %}
+<section class="orders-page container">
+  <header class="shop-header">
+    <div>
+      <p class="eyebrow">Orders</p>
+      <h1>My Orders</h1>
+    </div>  
+  </header>
+
+  <div class="order-filter-row">
+    {% for status in valid_statuses %}
+      <a href="{{ url_for('orders.orders', status=status) }}" class="filter-chip {% if filter == status %}active{% endif %}">
+        {{ status|title }}
+      </a>
+    {% endfor %}
+  </div>
+
+  {% if orders %}
+    <div class="orders-list">
+      {% for order in orders %}
+        <article class="order-card">
+          <div class="order-top-row">
+            <div>
+              <p class="order-label">Order Number</p>
+              <h3>{{ order.order_number }}</h3>
+            </div>
+            <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span>
+          </div>
+
+          <div class="order-meta-grid">
+            <div>
+              <p class="order-label">Order Date</p>
+              <p>{{ order.created_at.strftime('%b %d, %Y') }}</p>
+            </div>
+            <div>
+              <p class="order-label">Items</p>
+              <p>{{ order.total_items if order.total_items is defined else '—' }}</p>
+            </div>
+            <div>
+              <p class="order-label">Total</p>
+              <p>₱{{ '%.2f'|format(order.total_amount) }}</p>
+            </div>
+          </div>
+
+          <div class="order-footer-row">
+            <span>{{ order.payment_method|title }}</span>
+            <a href="{{ url_for('orders.order_detail', order_number=order.order_number) }}" class="primary-btn small-btn">View Details</a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state compact">
+      <h3>No orders yet.</h3>
+      <p>Your order history will appear here after you place a purchase.</p>
+      <a href="{{ url_for('products.products') }}" class="primary-btn">Shop Now</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

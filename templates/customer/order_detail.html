@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Details | BROOMERCE{% endblock %}
+
+{% block content %}
+<section class="order-detail-page container">
+  <header class="shop-header">
+    <div>
+      <p class="eyebrow">Order Details</p>
+      <h1>{{ order.order_number }}</h1>
+    </div>
+  </header>
+
+  <div class="order-detail-layout">
+    <div class="order-detail-panel">
+      <div class="detail-summary-card">
+        <div class="order-top-row">
+          <div>
+            <p class="order-label">Current Status</p>
+            <h3>{{ order.status }}</h3>
+          </div>
+          <span class="status-badge status-{{ order.status|lower }}">{{ order.status }}</span>
+        </div>
+
+        <div class="order-meta-grid compact-grid">
+          <div>
+            <p class="order-label">Order Date</p>
+            <p>{{ order.created_at.strftime('%b %d, %Y') }}</p>
+          </div>
+          <div>
+            <p class="order-label">Payment</p>
+            <p>{{ payment.payment_method if payment else order.payment_method }}</p>
+          </div>
+          <div>
+            <p class="order-label">Delivery</p>
+            <p>{{ order.delivery_method }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-card">
+        <h2>Order Tracking</h2>
+        <div class="timeline">
+          {% for step in status_timeline %}
+            <div class="timeline-item {% if step.active %}active{% endif %}">
+              <span class="dot"></span>
+              <span>{{ step.name }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="items-card">
+        <h2>Items</h2>
+        {% for item in items %}
+          <div class="order-item-row">
+            <div>
+              <strong>{{ item.product_name }}</strong>
+              <small>SKU: {{ item.sku }} · Qty: {{ item.quantity }}</small>
+            </div>
+            <div class="order-item-price">
+              <span>₱{{ '%.2f'|format(item.unit_price) }}</span>
+              <small>₱{{ '%.2f'|format(item.subtotal) }}</small>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <aside class="order-side-panel">
+      <div class="detail-summary-card">
+        <h2>Shipping</h2>
+        <p>{{ order.shipping_first_name }} {{ order.shipping_last_name }}</p>
+        <p>{{ order.shipping_phone }}</p>
+        <p>{{ order.shipping_address }}</p>
+        <p>{{ order.shipping_city }}, {{ order.shipping_province }}</p>
+        <p>{{ order.shipping_postal_code }}</p>
+        {% if order.shipping_instructions %}
+          <p><strong>Instructions:</strong> {{ order.shipping_instructions }}</p>
+        {% endif %}
+      </div>
+
+      <div class="detail-summary-card">
+        <h2>Totals</h2>
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>₱{{ '%.2f'|format(order.subtotal) }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span>₱{{ '%.2f'|format(order.shipping_fee) }}</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>Total</span>
+          <span>₱{{ '%.2f'|format(order.total_amount) }}</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}

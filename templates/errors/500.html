@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Server Error | BROOMERCE{% endblock %}
+
+{% block content %}
+<section class="error-page container">
+  <div class="error-card">
+    <p class="eyebrow">500 Error</p>
+    <h1>Something went wrong.</h1>
+    <p>We’re working on it. Please try again in a few moments.</p>
+    <a href="{{ url_for('main.home') }}" class="primary-btn">Back to Home</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}BROOMERCE Admin Dashboard{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <span>🧹</span>
+      <strong>BROOMERCE</strong>
+    </div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="active">Dashboard</a>
+      <a href="{{ url_for('admin.products') }}">Products</a>
+      <a href="{{ url_for('admin.categories') }}">Categories</a>
+      <a href="{{ url_for('admin.inventory') }}">Inventory</a>
+      <a href="{{ url_for('admin.inventory_movements') }}">Inventory Movements</a>
+      <a href="{{ url_for('admin.suppliers') }}">Suppliers</a>
+      <a href="{{ url_for('admin.purchases') }}">Purchases</a>
+      <a href="{{ url_for('admin.orders') }}">Orders</a>
+      <a href="{{ url_for('admin.customers') }}">Customers</a>
+      <a href="{{ url_for('admin.reports') }}">Reports</a>
+      <a href="{{ url_for('main.home') }}">Back to Store</a>
+      <a href="{{ url_for('auth.logout') }}">Logout</a>
+    </nav>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <h1>Admin Dashboard</h1>
+      <div class="admin-header-actions">
+        <span class="badge">{{ session.get('user_role', 'admin')|upper }}</span>
+      </div>
+    </header>
+
+    <section class="dashboard-grid">
+      <div class="stat-card"><span>Total Products</span><strong>{{ total_products }}</strong></div>
+      <div class="stat-card"><span>Low Stock</span><strong>{{ low_stock_products }}</strong></div>
+      <div class="stat-card"><span>Total Customers</span><strong>{{ total_customers }}</strong></div>
+      <div class="stat-card"><span>Pending Orders</span><strong>{{ pending_orders }}</strong></div>
+      <div class="stat-card"><span>Today's Orders</span><strong>{{ today_orders }}</strong></div>
+      <div class="stat-card"><span>Today's Sales</span><strong>₱{{ '%.2f'|format(today_sales) }}</strong></div>
+      <div class="stat-card"><span>Monthly Sales</span><strong>₱{{ '%.2f'|format(monthly_sales) }}</strong></div>
+    </section>
+
+    <section class="admin-panels">
+      <div class="panel">
+        <h2>Recent Orders</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in recent_orders %}
+            <tr>
+              <td>{{ order.order_number }}</td>
+              <td>{{ order.first_name }} {{ order.last_name }}</td>
+              <td>{{ order.created_at }}</td>
+              <td>₱{{ '%.2f'|format(order.total_amount) }}</td>
+              <td><span class="status-badge">{{ order.status }}</span></td>
+              <td><a href="{{ url_for('admin.order_detail', order_number=order.order_number) }}">View Order</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6">No recent orders found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h2>Top Products</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Units Sold</th>
+              <th>Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for product in top_products %}
+            <tr>
+              <td>{{ product.name }}</td>
+              <td>{{ product.units_sold }}</td>
+              <td>₱{{ '%.2f'|format(product.revenue) }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3">No sales data available yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+{% endblock %}

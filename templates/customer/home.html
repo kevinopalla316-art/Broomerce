@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Home | BROOMERCE{% endblock %}
+
+{% block content %}
+<section class="hero-section container">
+  <div class="hero-copy">
+    <p class="eyebrow">Broom essentials for every home</p>
+    <h1>Quality Brooms For Every Need</h1>
+    <p class="hero-subtext">Strong. Durable. Affordable.</p>
+    <div class="hero-actions">
+      <a href="{{ url_for('products.products') }}" class="primary-btn">Shop Now</a>
+      <a href="{{ url_for('products.products') }}" class="secondary-btn">Browse Collections</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="product-card product-card-large">
+      <div class="product-image broom-hero-bundle"><img src="{{ url_for('static', filename='images/products/premium.jpg') }}" alt="Premium Cleaning Set"></div>
+      <div class="product-meta">
+        <span>Premium Cleaning Set</span>
+        <strong>₱699</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container categories-section">
+  <div class="section-heading">
+    <h2>Popular Categories</h2>
+    <a href="{{ url_for('products.products') }}">View all</a>
+  </div>
+
+  {% if categories %}
+    <div class="category-grid">
+      {% for category in categories %}
+        <a href="{{ url_for('products.products', category=category.id) }}" class="category-card">
+          <div class="category-icon">🧹</div>
+          <h3>{{ category.name }}</h3>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state compact">
+      <h3>Products are coming soon.</h3>
+    </div>
+  {% endif %}
+</section>
+
+<section class="container products-section">
+  <div class="section-heading">
+    <h2>Featured Products</h2>
+    <a href="{{ url_for('products.products') }}">See more</a>
+  </div>
+
+  {% if featured_products %}
+    <div class="product-grid">
+      {% for product in featured_products %}
+        <article class="product-card">
+          <div class="product-image product-{{ loop.index % 4 + 1 }}">
+            {% if product.image %}
+              <img src="{{ url_for('static', filename='images/products/' + product.image) }}" alt="{{ product.name }}" />
+            {% endif %}
+          </div>
+          <div class="product-info">
+            <h3>{{ product.name }}</h3>
+            <p>₱{{ '%.2f'|format(product.price) }}</p>
+            <a href="{{ url_for('products.product_details', slug=product.slug) }}" class="secondary-btn small-btn">View</a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state compact">
+      <h3>Featured products will appear here soon.</h3>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

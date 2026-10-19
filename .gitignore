@@ -1,0 +1,52 @@
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Uploaded files and customer data
+uploads/*
+!uploads/.gitkeep
+
+# Local application data
+instance/
+
+# Logs
+*.log
+logs/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Database backups and dumps
+*.bak
+*.backup
+*.dump
+*.sql.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini

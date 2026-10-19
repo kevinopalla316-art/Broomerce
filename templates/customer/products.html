@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Products | BROOMERCE{% endblock %}
+
+{% block content %}
+<section class="products-page container">
+  <header class="shop-header" id="shop">
+    <div>
+      <p class="eyebrow">Shop</p>
+      <h1>Shop Brooms</h1>
+      <p class="page-subtitle">Find the right broom for every cleaning need.</p>
+    </div>
+  </header>
+
+  <section class="catalog-controls">
+    <form method="GET" action="{{ url_for('products.products') }}" class="filter-form" id="catalog-filter-form">
+      <div class="search-field">
+        <input type="text" name="q" value="{{ search_term or '' }}" placeholder="Search brooms..." />
+      </div>
+
+      <div class="filter-field">
+        <select name="category">
+          <option value="">All categories</option>
+          {% for category in categories %}
+            <option value="{{ category.id }}" {% if active_category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="filter-field range-field">
+        <input type="number" name="min_price" value="{{ min_price if min_price is not none else '' }}" placeholder="Min ₱" min="0" step="0.01" />
+      </div>
+
+      <div class="filter-field range-field">
+        <input type="number" name="max_price" value="{{ max_price if max_price is not none else '' }}" placeholder="Max ₱" min="0" step="0.01" />
+      </div>
+
+      <div class="filter-field">
+        <select name="sort">
+          <option value="featured" {% if sort == 'featured' %}selected{% endif %}>Featured</option>
+          <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+          <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+          <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest</option>
+          <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Name: A-Z</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button type="submit" class="primary-btn small-btn">Apply</button>
+        <a href="{{ url_for('products.products') }}" class="secondary-btn small-btn">Clear</a>
+      </div>
+    </form>
+  </section>
+
+  <section class="category-strip">
+    {% if categories %}
+      {% for category in categories %}
+        <a href="{{ url_for('products.products', category=category.id) }}" class="category-pill {% if active_category_id == category.id %}active{% endif %}">
+          {{ category.name }}
+        </a>
+      {% endfor %}
+    {% else %}
+      <div class="empty-message">No categories available yet.</div>
+    {% endif %}
+  </section>
+
+  {% if products %}
+    <div class="results-meta">
+      <span>{{ total_products }} product{% if total_products != 1 %}s{% endif %}</span>
+    </div>
+
+    <div class="product-grid" id="products-list">
+      {% for product in products %}
+        <article class="product-card product-list-card">
+          <div class="product-image product-{{ loop.index % 4 + 1 }}">
+            {% if product.image %}
+              <img src="{{ url_for('static', filename='images/products/' + product.image) }}" alt="{{ product.name }}" />
+            {% endif %}
+          </div>
+          <div class="product-info">
+            <div class="meta-row">
+              <span class="category-badge">{{ product.category_name or 'General' }}</span>
+            </div>
+            <h3>{{ product.name }}</h3>
+            <p class="price-tag">₱{{ '%.2f'|format(product.price) }}</p>
+            {% if product.stock_quantity <= 0 %}
+              <span class="stock-status out">Out of Stock</span>
+            {% elif product.stock_quantity <= 5 %}
+              <span class="stock-status low">Only {{ product.stock_quantity }} left</span>
+            {% else %}
+              <span class="stock-status in">In Stock</span>
+            {% endif %}
+            <div class="product-actions">
+              <a href="{{ url_for('products.product_details', slug=product.slug) }}" class="secondary-btn small-btn">View Product</a>
+              <form method="POST" action="{{ url_for('cart.add_to_cart', product_id=product.id) }}" class="inline-cart-form">
+                <input type="hidden" name="quantity" value="1" />
+                <button type="submit" class="primary-btn small-btn">Add to Cart</button>
+              </form>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% if total_pages > 1 %}
+      <nav class="pagination" aria-label="Product pagination">
+        {% if page > 1 %}
+          <a href="{{ url_for('products.products', q=search_term, category=active_category_id, min_price=min_price, max_price=max_price, sort=sort, page=page-1) }}" class="page-link">Previous</a>
+        {% endif %}
+
+        {% for page_num in range(1, total_pages + 1) %}
+          <a href="{{ url_for('products.products', q=search_term, category=active_category_id, min_price=min_price, max_price=max_price, sort=sort, page=page_num) }}" class="page-link {% if page_num == page %}active{% endif %}">{{ page_num }}</a>
+        {% endfor %}
+
+        {% if page < total_pages %}
+          <a href="{{ url_for('products.products', q=search_term, category=active_category_id, min_price=min_price, max_price=max_price, sort=sort, page=page+1) }}" class="page-link">Next</a>
+        {% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <div class="empty-state">
+      <h3>No products found.</h3>
+      <p>Try adjusting your search or filters.</p>
+      <a href="{{ url_for('products.products') }}" class="primary-btn">Clear Filters</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Products | BROOMERCE Admin{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}" />{% endblock %}
+{% block content %}
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="admin-brand"><span>🧹</span><strong>BROOMERCE</strong></div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('admin.products') }}" class="active">Products</a>
+      <a href="{{ url_for('admin.categories') }}">Categories</a>
+      <a href="{{ url_for('admin.inventory') }}">Inventory</a>
+      <a href="{{ url_for('admin.inventory_movements') }}">Inventory Movements</a>
+      <a href="{{ url_for('admin.suppliers') }}">Suppliers</a>
+      <a href="{{ url_for('admin.purchases') }}">Purchases</a>
+      <a href="{{ url_for('admin.orders') }}">Orders</a>
+      <a href="{{ url_for('admin.customers') }}">Customers</a>
+      <a href="{{ url_for('admin.reports') }}">Reports</a>
+      <a href="{{ url_for('main.home') }}">Back to Store</a>
+    </nav>
+  </aside>
+  <main class="admin-main">
+    <header class="admin-header"><h1>Products</h1></header>
+    <section class="panel">
+      <table>
+        <thead><tr><th>Name</th><th>SKU</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for product in products %}
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.sku }}</td>
+            <td>{{ product.category_name }}</td>
+            <td>₱{{ '%.2f'|format(product.price) }}</td>
+            <td>{{ product.stock_quantity }}</td>
+            <td>{{ 'Active' if product.is_active else 'Inactive' }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6">No products found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+{% endblock %}

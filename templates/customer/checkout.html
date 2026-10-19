@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout | BROOMERCE{% endblock %}
+
+{% block content %}
+<section class="checkout-page container">
+  <header class="shop-header cart-header">
+    <div>
+      <p class="eyebrow">Checkout</p>
+      <h1>Ready to place order</h1>
+    </div>
+  </header>
+
+  {% if order_placed %}
+    <div class="order-success-card">
+      <h2>Order placed successfully</h2>
+      <p>Thank you, {{ order_details.customer_name }}. Your order for ₱{{ '%.2f'|format(order_details.total) }} has been received.</p>
+      <p><strong>Payment method:</strong> {{ order_details.payment_method }}</p>
+      <div class="cart-toolbar">
+        <a href="{{ url_for('products.products') }}" class="primary-btn small-btn">Continue Shopping</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="checkout-layout">
+      <form method="POST" action="{{ url_for('cart.checkout') }}" class="checkout-form-panel">
+        <div class="form-grid two-col">
+          <div class="field-group">
+            <label for="first_name">First name</label>
+            <input id="first_name" name="first_name" type="text" value="{{ checkout_data.get('first_name', '') }}" required />
+          </div>
+          <div class="field-group">
+            <label for="last_name">Last name</label>
+            <input id="last_name" name="last_name" type="text" value="{{ checkout_data.get('last_name', '') }}" required />
+          </div>
+          <div class="field-group">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" value="{{ checkout_data.get('email', '') }}" required />
+          </div>
+          <div class="field-group">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" value="{{ checkout_data.get('phone', '') }}" required />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="address">Street address</label>
+          <input id="address" name="address" type="text" value="{{ checkout_data.get('address', '') }}" required />
+        </div>
+
+        <div class="form-grid two-col">
+          <div class="field-group">
+            <label for="city">City</label>
+            <input id="city" name="city" type="text" value="{{ checkout_data.get('city', '') }}" required />
+          </div>
+          <div class="field-group">
+            <label for="province">Province</label>
+            <input id="province" name="province" type="text" value="{{ checkout_data.get('province', '') }}" required />
+          </div>
+          <div class="field-group">
+            <label for="postal_code">Postal code</label>
+            <input id="postal_code" name="postal_code" type="text" value="{{ checkout_data.get('postal_code', '') }}" required />
+          </div>
+          <div class="field-group">
+            <label for="delivery_method">Delivery method</label>
+            <select id="delivery_method" name="delivery_method" required>
+              <option value="standard" {% if checkout_data.get('delivery_method') == 'standard' %}selected{% endif %}>Standard Delivery (₱60)</option>
+              <option value="express" {% if checkout_data.get('delivery_method') == 'express' %}selected{% endif %}>Express Delivery (₱120)</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="payment_method">Payment method</label>
+            <select id="payment_method" name="payment_method" required>
+              <option value="cod" {% if checkout_data.get('payment_method') == 'cod' %}selected{% endif %}>Cash on Delivery</option>
+              <option value="gcash" {% if checkout_data.get('payment_method') == 'gcash' %}selected{% endif %}>GCash</option>
+              <option value="bank_transfer" {% if checkout_data.get('payment_method') == 'bank_transfer' %}selected{% endif %}>Bank Transfer</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="shipping_instructions">Delivery instructions (optional)</label>
+            <input id="shipping_instructions" name="shipping_instructions" type="text" value="{{ checkout_data.get('shipping_instructions', '') }}" />
+          </div>
+        </div>
+
+        <button type="submit" class="primary-btn full-width-btn">Review Order</button>
+      </form>
+
+      <aside class="checkout-summary-panel">
+        <h2>Order Summary</h2>
+
+        {% for item in items %}
+          <div class="checkout-item-row">
+            <div>
+              <strong>{{ item.name }}</strong>
+              <small>Qty: {{ item.quantity }}</small>
+            </div>
+            <span>₱{{ '%.2f'|format(item.line_total) }}</span>
+          </div>
+        {% endfor %}
+
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>₱{{ '%.2f'|format(subtotal) }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span>₱{{ '%.2f'|format(shipping) }}</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>Total</span>
+          <span>₱{{ '%.2f'|format(total) }}</span>
+        </div>
+      </aside>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

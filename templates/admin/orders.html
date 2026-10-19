@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Orders | BROOMERCE Admin{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}" />{% endblock %}
+{% block content %}
+<div class="admin-shell">
+  <aside class="admin-sidebar"><div class="admin-brand"><span>🧹</span><strong>BROOMERCE</strong></div><nav class="admin-nav"><a href="{{ url_for('admin.dashboard') }}">Dashboard</a><a href="{{ url_for('admin.products') }}">Products</a><a href="{{ url_for('admin.categories') }}">Categories</a><a href="{{ url_for('admin.inventory') }}">Inventory</a><a href="{{ url_for('admin.inventory_movements') }}">Inventory Movements</a><a href="{{ url_for('admin.suppliers') }}">Suppliers</a><a href="{{ url_for('admin.purchases') }}">Purchases</a><a href="{{ url_for('admin.orders') }}" class="active">Orders</a><a href="{{ url_for('admin.customers') }}">Customers</a><a href="{{ url_for('admin.reports') }}">Reports</a></nav></aside>
+  <main class="admin-main">
+    <header class="admin-header"><h1>Orders</h1></header>
+    <section class="panel">
+      <table>
+        <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Total</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for item in orders %}
+          <tr>
+            <td>{{ item.order_number }}</td>
+            <td>{{ item.first_name }} {{ item.last_name }}</td>
+            <td>{{ item.created_at }}</td>
+            <td>₱{{ '%.2f'|format(item.total_amount) }}</td>
+            <td>{{ item.payment_method }}</td>
+            <td>{{ item.status }}</td>
+            <td><a href="{{ url_for('admin.order_detail', order_number=item.order_number) }}">View</a></td>
+          </tr>
+          {% else %}<tr><td colspan="7">No orders found.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+{% endblock %}

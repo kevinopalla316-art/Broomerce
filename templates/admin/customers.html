@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Customers | BROOMERCE Admin{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}" />{% endblock %}
+{% block content %}
+<div class="admin-shell">
+  <aside class="admin-sidebar"><div class="admin-brand"><span>🧹</span><strong>BROOMERCE</strong></div><nav class="admin-nav"><a href="{{ url_for('admin.dashboard') }}">Dashboard</a><a href="{{ url_for('admin.products') }}">Products</a><a href="{{ url_for('admin.categories') }}">Categories</a><a href="{{ url_for('admin.inventory') }}">Inventory</a><a href="{{ url_for('admin.inventory_movements') }}">Inventory Movements</a><a href="{{ url_for('admin.suppliers') }}">Suppliers</a><a href="{{ url_for('admin.purchases') }}">Purchases</a><a href="{{ url_for('admin.orders') }}">Orders</a><a href="{{ url_for('admin.customers') }}" class="active">Customers</a><a href="{{ url_for('admin.reports') }}">Reports</a></nav></aside>
+  <main class="admin-main"><header class="admin-header"><h1>Customers</h1></header><section class="panel"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th></tr></thead><tbody>{% for user in users %}<tr><td>{{ user.first_name }} {{ user.last_name }}</td><td>{{ user.email }}</td><td>{{ user.phone }}</td><td>{{ user.role }}</td><td>{{ 'Active' if user.is_active else 'Inactive' }}</td></tr>{% else %}<tr><td colspan="5">No customers found.</td></tr>{% endfor %}</tbody></table></section></main>
+</div>
+{% endblock %}

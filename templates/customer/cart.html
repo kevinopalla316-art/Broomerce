@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Cart | BROOMERCE{% endblock %}
+
+{% block content %}
+<section class="cart-page container">
+  <header class="shop-header cart-header">
+    <div>
+      <p class="eyebrow">Shopping Cart</p>
+      <h1>Your Cart</h1>
+    </div>
+  </header>
+
+  {% if items %}
+    <div class="cart-layout">
+      <div class="cart-items-panel">
+        {% for item in items %}
+          <article class="cart-item">
+            <div class="cart-item-image product-{{ loop.index % 4 + 1 }}">
+              {% if item.image %}
+                <img src="{{ url_for('static', filename='images/products/' + item.image) }}" alt="{{ item.name }}" />
+              {% endif %}
+            </div>
+
+            <div class="cart-item-details">
+              <div>
+                <p class="cart-category">{{ item.category_name }}</p>
+                <h3>{{ item.name }}</h3>
+              </div>
+              <p class="cart-price">₱{{ '%.2f'|format(item.price) }} each</p>
+            </div>
+
+            <div class="cart-actions-wrap">
+              <form method="POST" action="{{ url_for('cart.update_cart_item', product_id=item.id) }}" class="qty-form">
+                <label for="qty-{{ item.id }}">Qty</label>
+                <div class="quantity-box compact-quantity">
+                  <input id="qty-{{ item.id }}" name="quantity" type="number" value="{{ item.quantity }}" min="1" max="99" />
+                </div>
+                <button type="submit" class="secondary-btn small-btn">Update</button>
+              </form>
+
+              <form method="POST" action="{{ url_for('cart.remove_cart_item', product_id=item.id) }}">
+                <button type="submit" class="text-link-btn">remove</button>
+              </form>
+            </div>
+
+            <div class="cart-line-total">
+              ₱{{ '%.2f'|format(item.line_total) }}
+            </div>
+          </article>
+        {% endfor %}
+
+        <div class="cart-toolbar">
+          <form method="POST" action="{{ url_for('cart.clear_cart') }}">
+            <button type="submit" class="secondary-btn small-btn">Clear Cart</button>
+          </form>
+          <a href="{{ url_for('products.products') }}" class="primary-btn small-btn">Continue Shopping</a>
+        </div>
+      </div>
+
+      <aside class="cart-summary">
+        <h2>Order Summary</h2>
+        <div class="summary-row">
+          <span>Items</span>
+          <span>{{ item_count }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>₱{{ '%.2f'|format(subtotal) }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span>₱{{ '%.2f'|format(shipping) }}</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>Total</span>
+          <span>₱{{ '%.2f'|format(total) }}</span>
+        </div>
+        <a href="{{ url_for('cart.checkout') }}" class="primary-btn full-width-btn">Proceed to Checkout</a>
+      </aside>
+    </div>
+  {% else %}
+    <div class="empty-state compact">
+      <h3>Your cart is empty.</h3>
+      <p>Add a broom or cleaning accessory to get started.</p>
+      <a href="{{ url_for('products.products') }}" class="primary-btn">Browse Products</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
